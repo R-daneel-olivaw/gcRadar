@@ -39,7 +39,7 @@ import com.gcr.structs.AbstractObjectRefrenceKey;
  * @author Manish Kumar
  * @since 0.1
  */
-public class SingleObjectSingleThreadedLog4jMonitor {
+public class SingleObjectSingleThreadedLog4jMonitor<I> {
 
     private InputModule inMod;
     private MonitoringModule monitoringMod;
@@ -83,7 +83,7 @@ public class SingleObjectSingleThreadedLog4jMonitor {
      * @throws UnsupportedOperationException if the monitoring has been
      * explicitly stopped by calling the {@link stopMonitoring()} method.
      */
-    public <I> boolean addObject(I object, String identifier) {
+    public <T extends I> boolean addObject(T object, String identifier) {
 
         if (stopFlag) {
             throw new UnsupportedOperationException("Objects can not be added after the moter has been stopped");
@@ -118,7 +118,7 @@ public class SingleObjectSingleThreadedLog4jMonitor {
      *             if the monitoring has been explicitly stopped by calling the
      *             {@link stopMonitoring()} method.
      */
-    public <I> boolean addObject(I object)
+    public <T extends I> boolean addObject(T object)
     {
 	if (stopFlag)
 	{

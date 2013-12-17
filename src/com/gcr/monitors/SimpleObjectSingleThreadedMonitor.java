@@ -39,7 +39,7 @@ import com.gcr.structs.AbstractObjectRefrenceKey;
  * @since 0.1
  * 
  */
-public class SimpleObjectSingleThreadedMonitor
+public class SimpleObjectSingleThreadedMonitor<I>
 {
     private InputModule inMod;
     private MonitoringModule monitoringMod;
@@ -90,7 +90,7 @@ public class SimpleObjectSingleThreadedMonitor
      *             if the monitoring has been explicitly stopped by calling the
      *             {@link stopMonitoring()} method.
      */
-    public <I> boolean addObject(I object, String identifier, GcRadarCallback callback)
+    public <T extends I> boolean addObject(T object, String identifier, GcRadarCallback callback)
     {
 	if (stopFlag)
 	{
@@ -134,7 +134,7 @@ public class SimpleObjectSingleThreadedMonitor
      *             if the monitoring has been explicitly stopped by calling the
      *             {@link stopMonitoring()} method.
      */
-    public <I> boolean addObject(I object, GcRadarCallback callback)
+    public <T extends I> boolean addObject(T object, GcRadarCallback callback)
     {
 	if (stopFlag)
 	{

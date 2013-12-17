@@ -68,7 +68,7 @@ import com.gcr.structs.annotation.GcRadarToInclude;
  * @since 0.2
  * @author R.daneel.olivaw
  */
-public class ObjectTreeMonitor
+public class ObjectTreeMonitor<I>
 {
     private IndividualObjectFeed_Impl inMod;
     private MonitoringModule monitoringMod;
@@ -116,7 +116,7 @@ public class ObjectTreeMonitor
      *             if the monitoring has been explicitly stopped by calling the
      *             {@link stopMonitoring()} method.
      */
-    public <I> boolean addObject(I object, String identifier, GcRadarCallback callback)
+    public <T extends I> boolean addObject(T object, String identifier, GcRadarCallback callback)
     {
 	if (stopFlag)
 	{
@@ -145,7 +145,7 @@ public class ObjectTreeMonitor
      * 
      * @throws UnsupportedOperationException
      */
-    public <I> boolean addObject(I object, GcRadarCallback callback)
+    public <T extends I> boolean addObject(T object, GcRadarCallback callback)
     {
 	throw new UnsupportedOperationException(
 		"TreeInputModule does not support this operation. Please use addObject(I , Object , GcRadarCallback)");
