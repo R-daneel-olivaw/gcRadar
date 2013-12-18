@@ -24,6 +24,7 @@ import com.gcr.monitors.modules.in.impl.InputModule;
 import com.gcr.monitors.modules.monitoring.impl.MonitoringModule;
 import com.gcr.monitors.modules.notification.impl.NotificationModule;
 import com.gcr.structs.AbstractObjectRefrenceKey;
+import com.gcr.structs.MonitorState;
 
 /**
  * This Object monitor runs on a worker thread and captures GC events on the
@@ -44,7 +45,7 @@ public class SimpleObjectSingleThreadedMonitor<I> {
 	private MonitoringModule monitoringMod;
 	private NotificationModule notificationMod;
 
-	private boolean stopFlag = false;
+	MonitorState state = MonitorState.NEW;
 
 	/**
 	 * The constructor for creating the
@@ -65,8 +66,6 @@ public class SimpleObjectSingleThreadedMonitor<I> {
 		this.monitoringMod = new SingleThreadedMonitor_Impl(
 				individualObjectFeed_Impl.getWatchList());
 		this.notificationMod = new CallbackNotificationModule_Impl();
-
-		stopFlag = false;
 	}
 
 	/**
@@ -93,7 +92,7 @@ public class SimpleObjectSingleThreadedMonitor<I> {
 	 */
 	public <T extends I> boolean addObject(T object, String identifier,
 			GcRadarCallback callback) {
-		if (stopFlag) {
+		if (state == MonitorState.TERMINATED) {
 			throw new UnsupportedOperationException(
 					"Objects can not be added after the moter has been stopped");
 		}
@@ -132,7 +131,7 @@ public class SimpleObjectSingleThreadedMonitor<I> {
 	 *             {@link stopMonitoring()} method.
 	 */
 	public <T extends I> boolean addObject(T object, GcRadarCallback callback) {
-		if (stopFlag) {
+		if (state == MonitorState.TERMINATED) {
 			throw new UnsupportedOperationException(
 					"Objects can not be added after the moter has been stopped");
 		}
@@ -164,7 +163,7 @@ public class SimpleObjectSingleThreadedMonitor<I> {
 	 *             {@link stopMonitoring()} method.
 	 */
 	public boolean removeObject(String objectKey) {
-		if (stopFlag) {
+		if (state == MonitorState.TERMINATED) {
 			throw new UnsupportedOperationException(
 					"Objects can not be removed after the moter has been stopped");
 		}
@@ -181,7 +180,7 @@ public class SimpleObjectSingleThreadedMonitor<I> {
 	 */
 	public boolean startMonitoring() {
 		notificationMod.notifyStartMonitoring();
-		stopFlag = false;
+		state = MonitorState.RUNNING;
 
 		return monitoringMod.startMonitoring(notificationMod);
 	}
@@ -195,7 +194,7 @@ public class SimpleObjectSingleThreadedMonitor<I> {
 	 */
 	public boolean stopMonitoring() {
 		notificationMod.notifyStopMonitoring();
-		stopFlag = true;
+		state = MonitorState.HELD;
 
 		return monitoringMod.stopMonitoring(notificationMod);
 	}
@@ -207,6 +206,79 @@ public class SimpleObjectSingleThreadedMonitor<I> {
 	public int getPendingObjectsCount() {
 		return inMod.getPendingObjectsCount();
 	}
+	
+	/**
+	 * This method will hold the execution of the calling thread till the time
+	 * one of the following happens,
+	 * <ul>
+	 * <li>All the objects in the monitor are claimed by garbage collector.</li>
+	 * <li>The waiting thread is interrupted by some other thread</li>
+	 * <li>The monitoring is stopped by calling the
+	 * {@link ObjectTreeMonitor#startMonitoring()} method</li>
+	 * </ul>
+	 * 
+	 * @throws InterruptedException
+	 *             in case the waiting thread is interrupted
+	 * @throws UnsupportedOperationException
+	 *             in case the monitor is not running
+	 * @since 0.4
+	 */
+	public void lock() throws InterruptedException {
+
+		if (!isLockable()) {
+			throw new UnsupportedOperationException(
+					"Cannot lock if monitor is not running");
+		}
+
+		synchronized (this.monitoringMod) {
+			this.monitoringMod.wait();
+		}
+	}
+
+	/**
+	 * This method will hold the execution of the calling thread till the time
+	 * one of the following happens,
+	 * <ul>
+	 * <li>All the objects in the monitor are claimed by garbage collector.</li>
+	 * <li>The waiting thread is interrupted by some other thread</li>
+	 * <li>The timeout runs-out</li>
+	 * <li>The monitoring is stopped by calling the
+	 * {@link ObjectTreeMonitor#startMonitoring()} method</li>
+	 * </ul>
+	 * 
+	 * @param timeout
+	 *            the timeout
+	 * @throws InterruptedException
+	 *             in case the waiting thread is interrupted
+	 * @throws UnsupportedOperationException
+	 *             in case the monitor is not running
+	 * @since 0.4
+	 */
+	public void lock(long timeout) throws InterruptedException {
+
+		if (!isLockable()) {
+			throw new UnsupportedOperationException(
+					"Cannot lock if monitor is not running");
+		}
+
+		synchronized (this.monitoringMod) {
+			this.monitoringMod.wait(timeout);
+		}
+	}
+
+	private boolean isLockable() {
+		// I faced a decision here as to if we should allow a thread to be
+		// locked if the monitor is not running. I decided not to allow this as
+		// it did not seem intuitive however I could think of instances where it
+		// can be used.
+		if (state != MonitorState.RUNNING) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	// ****************** INNER-CLASSES ***********************
 
 	private class IndividualObjectFeed_Impl extends InputModule {
 		@Override
