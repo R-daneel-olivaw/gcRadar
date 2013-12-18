@@ -24,6 +24,7 @@ import com.gcr.monitors.modules.in.impl.TreeInputModule;
 import com.gcr.monitors.modules.monitoring.impl.MonitoringModule;
 import com.gcr.monitors.modules.notification.impl.NotificationModule;
 import com.gcr.structs.AbstractObjectRefrenceKey;
+import com.gcr.structs.MonitorState;
 import com.gcr.structs.annotation.GcRadarNotToInclude;
 import com.gcr.structs.annotation.GcRadarToInclude;
 
@@ -68,190 +69,235 @@ import com.gcr.structs.annotation.GcRadarToInclude;
  * @since 0.2
  * @author R.daneel.olivaw
  */
-public class ObjectTreeMonitor<I>
-{
-    private IndividualObjectFeed_Impl inMod;
-    private MonitoringModule monitoringMod;
-    private NotificationModule notificationMod;
+public class ObjectTreeMonitor<I> {
+	private IndividualObjectFeed_Impl inMod;
+	private MonitoringModule monitoringMod;
+	private NotificationModule notificationMod;
 
-    private boolean stopFlag = false;
+	MonitorState state = MonitorState.NEW;
 
-    /**
-     * Instantiates a new object tree monitor.
-     * 
-     * @param isOptimistic
-     *            for choosing the operating mode of the monitor
-     */
-    public ObjectTreeMonitor(boolean isOptimistic)
-    {
-	this.inMod = new IndividualObjectFeed_Impl(isOptimistic);
-	this.monitoringMod = new SingleThreadedMonitor_Impl(((IndividualObjectFeed_Impl) inMod).getWatchList());
-	this.notificationMod = new CallbackNotificationModule_Impl();
+	/**
+	 * Instantiates a new object tree monitor.
+	 * 
+	 * @param isOptimistic
+	 *            for choosing the operating mode of the monitor
+	 */
+	public ObjectTreeMonitor(boolean isOptimistic) {
+		this.inMod = new IndividualObjectFeed_Impl(isOptimistic);
+		this.monitoringMod = new SingleThreadedMonitor_Impl(
+				((IndividualObjectFeed_Impl) inMod).getWatchList());
+		this.notificationMod = new CallbackNotificationModule_Impl();
 
-	stopFlag = false;
-    }
-
-    /**
-     * Adds the object along with the comprising objects and the contents of the
-     * immediate parent according to the the criteria defined by the operating
-     * mode. <br>
-     * <br>
-     * For more details please refer to {@link ObjectTreeMonitor}.
-     * 
-     * @param object
-     *            - The object to be monitored
-     * @param identifier
-     *            - The key that will be used as a key for the object to be
-     *            added for the monitoring purposes.
-     * @param callback
-     *            - {@link GcRadarCallback} is used when a GC event needs to be
-     *            reported
-     * @return <code>true</code> if the object was added successfully<br>
-     *         <code>false</code> if the object was not added as the identifier
-     *         used to add the object has already been used.
-     * 
-     * @throws NullPointerException
-     *             if the object to be added of identifier is <code>null</code>.
-     * @throws UnsupportedOperationException
-     *             if the monitoring has been explicitly stopped by calling the
-     *             {@link stopMonitoring()} method.
-     */
-    public <T extends I> boolean addObject(T object, String identifier, GcRadarCallback callback)
-    {
-	if (stopFlag)
-	{
-	    throw new UnsupportedOperationException("Objects can not be added after the moter has been stopped");
+		// stopFlag = false;
 	}
 
-	if (inMod.addObject(object, identifier, callback))
-	{
-	    State monitoringStatus = monitoringMod.getStatus();
+	/**
+	 * Adds the object along with the comprising objects and the contents of the
+	 * immediate parent according to the the criteria defined by the operating
+	 * mode. <br>
+	 * <br>
+	 * For more details please refer to {@link ObjectTreeMonitor}.
+	 * 
+	 * @param object
+	 *            - The object to be monitored
+	 * @param identifier
+	 *            - The key that will be used as a key for the object to be
+	 *            added for the monitoring purposes.
+	 * @param callback
+	 *            - {@link GcRadarCallback} is used when a GC event needs to be
+	 *            reported
+	 * @return <code>true</code> if the object was added successfully<br>
+	 *         <code>false</code> if the object was not added as the identifier
+	 *         used to add the object has already been used.
+	 * 
+	 * @throws NullPointerException
+	 *             if the object to be added of identifier is <code>null</code>.
+	 * @throws UnsupportedOperationException
+	 *             if the monitoring has been explicitly stopped by calling the
+	 *             {@link stopMonitoring()} method.
+	 */
+	public <T extends I> boolean addObject(T object, String identifier,
+			GcRadarCallback callback) {
+		if (state == MonitorState.TERMINATED) {
+			throw new UnsupportedOperationException(
+					"Objects can not be added after the moter has been stopped");
+		}
 
-	    if (monitoringStatus == State.TERMINATED)
-	    {
-		startMonitoring();
-	    }
+		if (inMod.addObject(object, identifier, callback)) {
+			State monitoringStatus = monitoringMod.getStatus();
 
-	    return true;
-	}
-	else
-	{
-	    return false;
-	}
-    }
+			if (monitoringStatus == State.TERMINATED) {
+				startMonitoring();
+			}
 
-    /**
-     * This operation is not supported by the monitor
-     * 
-     * @throws UnsupportedOperationException
-     */
-    public <T extends I> boolean addObject(T object, GcRadarCallback callback)
-    {
-	throw new UnsupportedOperationException(
-		"TreeInputModule does not support this operation. Please use addObject(I , Object , GcRadarCallback)");
-    }
-
-    /**
-     * This method will remove the object from monitoring
-     * 
-     * @param objectKey
-     *            - the identifier key used at the time of adding the object
-     * @return <code>true</code> if the object was removed sucessfully.<br>
-     *         <code>false</code> if the object was not removed.
-     * @throws NullPointerException
-     *             if objectKey is <code>null</code>
-     * @throws UnsupportedOperationException
-     *             if the monitoring has been explicitly stopped by calling the
-     *             {@link stopMonitoring()} method.
-     */
-    public boolean removeObject(String objectKey)
-    {
-	if (stopFlag)
-	{
-	    throw new UnsupportedOperationException("Objects can not be removed after the moter has been stopped");
+			return true;
+		} else {
+			return false;
+		}
 	}
 
-	return inMod.removeObject(objectKey);
-    }
-
-    /**
-     * Trigger the start of monitoring of the objects for GC events.
-     * 
-     * @return <code>true</code> if the monitoring has been started
-     *         successfully.<br>
-     *         <code>false</code> if monitoring could not be started.
-     */
-    public boolean startMonitoring()
-    {
-	notificationMod.notifyStartMonitoring();
-	stopFlag = false;
-
-	return monitoringMod.startMonitoring(notificationMod);
-    }
-
-    /**
-     * Trigger the stop monitoring of the objects for GC events.
-     * 
-     * @return <code>true</code> if the monitoring has been stopped
-     *         successfully.<br>
-     *         <code>false</code> if monitoring could not be stopped.
-     */
-    public boolean stopMonitoring()
-    {
-	notificationMod.notifyStopMonitoring();
-	stopFlag = true;
-
-	return monitoringMod.stopMonitoring(notificationMod);
-    }
-
-    /**
-     * Gets a set of alias objects that represent one to one the objects that
-     * have not been removed from monitoring yet.
-     * 
-     * @return a set of alias objects
-     */
-    public Set<AbstractObjectRefrenceKey<Object>> getPendingObjects()
-    {
-	return inMod.getPendingObjects();
-    }
-
-    /**
-     * Gets the number of objects that are being monitored and are yet to be
-     * claimed by the garbage collector.
-     * 
-     * @return the pending objects count
-     */
-    public int getPendingObjectsCount()
-    {
-	return inMod.getPendingObjectsCount();
-    }
-
-    private class IndividualObjectFeed_Impl extends TreeInputModule
-    {
-	public IndividualObjectFeed_Impl(boolean isOptimistic)
-	{
-	    super(isOptimistic);
+	/**
+	 * This operation is not supported by the monitor
+	 * 
+	 * @throws UnsupportedOperationException
+	 */
+	public <T extends I> boolean addObject(T object, GcRadarCallback callback) {
+		throw new UnsupportedOperationException(
+				"TreeInputModule does not support this operation. Please use addObject(I , Object , GcRadarCallback)");
 	}
 
-	@Override
-	protected List<AbstractObjectRefrenceKey<Object>> getWatchList()
-	{
-	    return super.getWatchList();
-	}
-    }
+	/**
+	 * This method will remove the object from monitoring
+	 * 
+	 * @param objectKey
+	 *            - the identifier key used at the time of adding the object
+	 * @return <code>true</code> if the object was removed sucessfully.<br>
+	 *         <code>false</code> if the object was not removed.
+	 * @throws NullPointerException
+	 *             if objectKey is <code>null</code>
+	 * @throws UnsupportedOperationException
+	 *             if the monitoring has been explicitly stopped by calling the
+	 *             {@link stopMonitoring()} method.
+	 */
+	public boolean removeObject(String objectKey) {
+		if (state == MonitorState.TERMINATED) {
+			throw new UnsupportedOperationException(
+					"Objects can not be removed after the moter has been stopped");
+		}
 
-    private class SingleThreadedMonitor_Impl extends MonitoringModule
-    {
-	protected SingleThreadedMonitor_Impl(List<AbstractObjectRefrenceKey<Object>> keyCollection)
-	{
-	    super(keyCollection);
+		return inMod.removeObject(objectKey);
 	}
-	// Full implementation in super as functionality used as is
-    }
 
-    private class CallbackNotificationModule_Impl extends NotificationModule
-    {
-	// Full implementation in super as functionality used as is
-    }
+	/**
+	 * Trigger the start of monitoring of the objects for GC events.
+	 * 
+	 * @return <code>true</code> if the monitoring has been started
+	 *         successfully.<br>
+	 *         <code>false</code> if monitoring could not be started.
+	 */
+	public boolean startMonitoring() {
+		notificationMod.notifyStartMonitoring();
+		// stopFlag = false;
+		state = MonitorState.RUNNING;
+
+		return monitoringMod.startMonitoring(notificationMod);
+	}
+
+	/**
+	 * Trigger the stop monitoring of the objects for GC events.
+	 * 
+	 * @return <code>true</code> if the monitoring has been stopped
+	 *         successfully.<br>
+	 *         <code>false</code> if monitoring could not be stopped.
+	 */
+	public boolean stopMonitoring() {
+		notificationMod.notifyStopMonitoring();
+		// stopFlag = true;
+		state = MonitorState.HELD;
+
+		return monitoringMod.stopMonitoring(notificationMod);
+	}
+
+	/**
+	 * Gets a set of alias objects that represent one to one the objects that
+	 * have not been removed from monitoring yet.
+	 * 
+	 * @return a set of alias objects
+	 */
+	public Set<AbstractObjectRefrenceKey<Object>> getPendingObjects() {
+		return inMod.getPendingObjects();
+	}
+
+	/**
+	 * Gets the number of objects that are being monitored and are yet to be
+	 * claimed by the garbage collector.
+	 * 
+	 * @return the pending objects count
+	 */
+	public int getPendingObjectsCount() {
+		return inMod.getPendingObjectsCount();
+	}
+
+	/**
+	 * This method will hold the execution of the calling thread till the time
+	 * one of the following happens,
+	 * <ul>
+	 * <li>All the objects in the monitor are claimed by garbage collector.</li>
+	 * <li>The waiting thread is interrupted by some other thread</li>
+	 * </ul>
+	 * 
+	 * @throws InterruptedException
+	 *             in case the waiting thread is interrupted
+	 * @throws UnsupportedOperationException
+	 *             in case the monitor is not running
+	 * @since 0.4
+	 */
+	public void lock() throws InterruptedException {
+
+		System.out.println(state);
+
+		if (state != MonitorState.RUNNING) {
+			throw new UnsupportedOperationException(
+					"Cannot lock if monitor is not running");
+		}
+
+		synchronized (this.monitoringMod) {
+			this.monitoringMod.wait();
+		}
+	}
+
+	/**
+	 * This method will hold the execution of the calling thread till the time
+	 * one of the following happens,
+	 * <ul>
+	 * <li>All the objects in the monitor are claimed by garbage collector.</li>
+	 * <li>The waiting thread is interrupted by some other thread</li>
+	 * <li>The timeout runs-out</li>
+	 * </ul>
+	 * 
+	 * @param timeout
+	 *            the timeout
+	 * @throws InterruptedException
+	 *             in case the waiting thread is interrupted
+	 * @throws UnsupportedOperationException
+	 *             in case the monitor is not running
+	 * @since 0.4
+	 */
+	public void lock(long timeout) throws InterruptedException {
+
+		if (state != MonitorState.RUNNING) {
+			throw new UnsupportedOperationException(
+					"Cannot lock if monitor is not running");
+		}
+
+		synchronized (this.monitoringMod) {
+			this.monitoringMod.wait(timeout);
+		}
+	}
+
+	// ****************** INNER-CLASSES ***********************
+
+	private class IndividualObjectFeed_Impl extends TreeInputModule {
+		public IndividualObjectFeed_Impl(boolean isOptimistic) {
+			super(isOptimistic);
+		}
+
+		@Override
+		protected List<AbstractObjectRefrenceKey<Object>> getWatchList() {
+			return super.getWatchList();
+		}
+	}
+
+	private class SingleThreadedMonitor_Impl extends MonitoringModule {
+		protected SingleThreadedMonitor_Impl(
+				List<AbstractObjectRefrenceKey<Object>> keyCollection) {
+			super(keyCollection);
+		}
+		// Full implementation in super as functionality used as is
+	}
+
+	private class CallbackNotificationModule_Impl extends NotificationModule {
+		// Full implementation in super as functionality used as is
+	}
 
 }
