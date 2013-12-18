@@ -9,14 +9,14 @@ GcRadar is a library that will monitor the activities of the Java Garbage collec
 ##Usage & Examples##
 [gcRadar Usage](https://github.com/R-daneel-olivaw/gcRadar/wiki/gcRadar-Usage)
 
-[Example - SimpleObjectSingleThreadedMonitor](Example - SimpleObjectSingleThreadedMonitor)
+[Example - SimpleObjectSingleThreadedMonitor](https://github.com/R-daneel-olivaw/gcRadar/wiki/Example---SimpleObjectSingleThreadedMonitor)
 
-[Example - SingleObjectSingleThreadedLog4jMonitor](Example - SingleObjectSingleThreadedLog4jMonitor)
+[Example - SingleObjectSingleThreadedLog4jMonitor](https://github.com/R-daneel-olivaw/gcRadar/wiki/Example---SingleObjectSingleThreadedLog4jMonitor)
 
-[Example - ObjectTreeMonitor](Example - ObjectTreeMonitor)
+[Example - ObjectTreeMonitor](https://github.com/R-daneel-olivaw/gcRadar/wiki/Example---ObjectTreeMonitor)
 
 ##How it Works ?##
-[How it works ?](How it works ?)
+[How it works ?](https://github.com/R-daneel-olivaw/gcRadar/wiki/How-it-works-%3F)
 
 -------------
 
