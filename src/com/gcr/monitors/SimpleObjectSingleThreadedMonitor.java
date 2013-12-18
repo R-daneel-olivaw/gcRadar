@@ -199,10 +199,20 @@ public class SimpleObjectSingleThreadedMonitor<I> {
 		return monitoringMod.stopMonitoring(notificationMod);
 	}
 
+	/**
+	 * Gets the pending objects.
+	 *
+	 * @return the pending objects
+	 */
 	public Set<AbstractObjectRefrenceKey<Object>> getPendingObjects() {
 		return inMod.getPendingObjects();
 	}
 
+	/**
+	 * Gets the pending objects count.
+	 *
+	 * @return the pending objects count
+	 */
 	public int getPendingObjectsCount() {
 		return inMod.getPendingObjectsCount();
 	}
