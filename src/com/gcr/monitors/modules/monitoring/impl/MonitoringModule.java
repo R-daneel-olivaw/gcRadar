@@ -42,7 +42,6 @@ public abstract class MonitoringModule implements MonitoringModuleInterface {
 	private NotificationModuleInterface notificationMod;
 
 	/** The stop flag that is set when the monitoring thread is stopped. */
-	private boolean stopFlag = false;
 
 	protected MonitoringModule(
 			List<AbstractObjectRefrenceKey<Object>> keyCollection) {
@@ -57,10 +56,13 @@ public abstract class MonitoringModule implements MonitoringModuleInterface {
 	 */
 	@Override
 	public boolean startMonitoring(NotificationModuleInterface notificationMod) {
-		this.notificationMod = notificationMod;
-		monitorThread.start();
 
-		stopFlag = false;
+		this.notificationMod = notificationMod;
+
+		if (monitorThread.getState() != Thread.State.RUNNABLE) {
+			monitorThread.start();
+		}
+		monitorThread.setStopFlag(false);
 
 		return true;
 	}
@@ -72,13 +74,23 @@ public abstract class MonitoringModule implements MonitoringModuleInterface {
 	 */
 	@Override
 	public boolean stopMonitoring(NotificationModuleInterface notificationMod) {
-		if (getStatus() == State.RUNNABLE) {
-			stopFlag = true;
+		if (monitorThread.getState() != Thread.State.NEW) {
+
+			monitorThread.setStopFlag(true);
+
+			// if a monitoring thread is already running we stop it naturally by
+			// raising a flag for it to stop. The we create a new instance of a
+			// monitoring thread and reuse the watch-list from the previous
+			// monitoring thread.
+			MonitorThread monitorThreadBuffer = new MonitorThread(
+					monitorThread.getWatchList());
+
+			monitorThread = monitorThreadBuffer;
+
 			return true;
 		} else {
 			return false;
 		}
-
 	}
 
 	/**
@@ -95,12 +107,14 @@ public abstract class MonitoringModule implements MonitoringModuleInterface {
 	}
 
 	/*
-	 * The Class MonitorThread is the thread cla.
+	 * The Class MonitorThread is the thread class.
 	 */
 	private class MonitorThread extends Thread {
 
 		/* The watch list. */
-		private List<AbstractObjectRefrenceKey<Object>> watchList;
+		private final List<AbstractObjectRefrenceKey<Object>> watchList;
+
+		private boolean stopFlag_i;
 
 		/*
 		 * Instantiates a new monitor thread.
@@ -120,18 +134,18 @@ public abstract class MonitoringModule implements MonitoringModuleInterface {
 		public void run() {
 			super.run();
 
-			while (!watchList.isEmpty()) {
-				if (stopFlag) {
+			while (!getWatchList().isEmpty()) {
+				if (isStopFlag()) {
 					break;
 				}
 
-				synchronized (watchList) {
-					Iterator<AbstractObjectRefrenceKey<Object>> iterator = watchList
+				synchronized (getWatchList()) {
+					Iterator<AbstractObjectRefrenceKey<Object>> iterator = getWatchList()
 							.iterator();
 
 					AbstractObjectRefrenceKey<Object> loopBuffer = null;
 					while (iterator.hasNext()) {
-						if (stopFlag) {
+						if (isStopFlag()) {
 							break;
 						}
 
@@ -151,7 +165,7 @@ public abstract class MonitoringModule implements MonitoringModuleInterface {
 						}
 					}
 
-					if (stopFlag) {
+					if (isStopFlag()) {
 						break;
 					}
 				}
@@ -162,9 +176,18 @@ public abstract class MonitoringModule implements MonitoringModuleInterface {
 			synchronized (MonitoringModule.this) {
 				MonitoringModule.this.notifyAll();
 			}
+		}
 
-			// help GC
-			monitorThread = null;
+		private List<AbstractObjectRefrenceKey<Object>> getWatchList() {
+			return watchList;
+		}
+
+		private boolean isStopFlag() {
+			return stopFlag_i;
+		}
+
+		private void setStopFlag(boolean stopFlag) {
+			this.stopFlag_i = stopFlag;
 		}
 	}
 

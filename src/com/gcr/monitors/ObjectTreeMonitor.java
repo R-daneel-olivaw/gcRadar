@@ -224,6 +224,8 @@ public class ObjectTreeMonitor<I> {
 	 * <ul>
 	 * <li>All the objects in the monitor are claimed by garbage collector.</li>
 	 * <li>The waiting thread is interrupted by some other thread</li>
+	 * <li>The monitoring is stopped by calling the
+	 * {@link ObjectTreeMonitor#startMonitoring()} method</li>
 	 * </ul>
 	 * 
 	 * @throws InterruptedException
@@ -234,9 +236,7 @@ public class ObjectTreeMonitor<I> {
 	 */
 	public void lock() throws InterruptedException {
 
-		System.out.println(state);
-
-		if (state != MonitorState.RUNNING) {
+		if (!isLockable()) {
 			throw new UnsupportedOperationException(
 					"Cannot lock if monitor is not running");
 		}
@@ -253,6 +253,8 @@ public class ObjectTreeMonitor<I> {
 	 * <li>All the objects in the monitor are claimed by garbage collector.</li>
 	 * <li>The waiting thread is interrupted by some other thread</li>
 	 * <li>The timeout runs-out</li>
+	 * <li>The monitoring is stopped by calling the
+	 * {@link ObjectTreeMonitor#startMonitoring()} method</li>
 	 * </ul>
 	 * 
 	 * @param timeout
@@ -265,13 +267,25 @@ public class ObjectTreeMonitor<I> {
 	 */
 	public void lock(long timeout) throws InterruptedException {
 
-		if (state != MonitorState.RUNNING) {
+		if (!isLockable()) {
 			throw new UnsupportedOperationException(
 					"Cannot lock if monitor is not running");
 		}
 
 		synchronized (this.monitoringMod) {
 			this.monitoringMod.wait(timeout);
+		}
+	}
+
+	private boolean isLockable() {
+		// I faced a decision here as to if we should allow a thread to be
+		// locked if the monitor is not running. I decided not to allow this as
+		// it did not seem intuitive however I could think of instances where it
+		// can be used.
+		if (state != MonitorState.RUNNING) {
+			return false;
+		} else {
+			return true;
 		}
 	}
 
