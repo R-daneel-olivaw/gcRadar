@@ -37,7 +37,8 @@ import com.gcr.structs.MonitorState;
  * <li>Single worker threaded monitor</li>
  * <li>Log4j logger to log GC events</li>
  * </ul>
- * 
+ *
+ * @param <I> the generic type
  * @author Manish Kumar
  * @since 0.1
  */

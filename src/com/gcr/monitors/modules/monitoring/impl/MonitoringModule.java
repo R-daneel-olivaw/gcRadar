@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
+import com.gcr.monitors.ObjectTreeMonitor;
 import com.gcr.monitors.modules.monitoring.MonitoringModuleInterface;
 import com.gcr.monitors.modules.notification.NotificationModuleInterface;
 import com.gcr.structs.AbstractObjectRefrenceKey;
@@ -113,6 +114,22 @@ public abstract class MonitoringModule implements MonitoringModuleInterface {
 		return State.RUNNABLE;
 	}
 
+	/**
+	 * This method will hold the execution of the calling thread till the time
+	 * one of the following happens,
+	 * <ul>
+	 * <li>All the objects in the monitor are claimed by garbage collector.</li>
+	 * <li>The waiting thread is interrupted by some other thread</li>
+	 * <li>The monitoring is stopped by calling the
+	 * {@link ObjectTreeMonitor#startMonitoring()} method</li>
+	 * </ul>
+	 * 
+	 * @throws InterruptedException
+	 *             in case the waiting thread is interrupted
+	 * @throws UnsupportedOperationException
+	 *             in case the monitor is not running
+	 * @since 0.4
+	 */
 	public void lock() throws InterruptedException {
 		try {
 			lock.lock();
@@ -122,6 +139,25 @@ public abstract class MonitoringModule implements MonitoringModuleInterface {
 		}
 	}
 
+	/**
+	 * This method will hold the execution of the calling thread till the time
+	 * one of the following happens,
+	 * <ul>
+	 * <li>All the objects in the monitor are claimed by garbage collector.</li>
+	 * <li>The waiting thread is interrupted by some other thread</li>
+	 * <li>The timeout runs-out</li>
+	 * <li>The monitoring is stopped by calling the
+	 * </ul>
+	 * 
+	 * @param time
+	 *            the time
+	 * @param unit
+	 *            the unit
+	 * @throws InterruptedException
+	 *             in case the waiting thread is interrupted
+	 *             {@link ObjectTreeMonitor#startMonitoring()} method</li> </ul>
+	 * @since 0.4
+	 */
 	public void lock(long time, TimeUnit unit) throws InterruptedException {
 		try {
 			lock.lock();

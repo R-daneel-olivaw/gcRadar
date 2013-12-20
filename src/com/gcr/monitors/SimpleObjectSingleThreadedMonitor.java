@@ -36,10 +36,10 @@ import com.gcr.structs.MonitorState;
  * <li>Single worker threaded monitor</li>
  * <li>Callback for notification on GC events</li>
  * </ul>
- * 
+ *
+ * @param <I> the generic type
  * @author R.daneel.olivaw
  * @since 0.1
- * 
  */
 public class SimpleObjectSingleThreadedMonitor<I> {
 	private InputModule inMod;

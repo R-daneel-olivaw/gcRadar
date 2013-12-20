@@ -66,7 +66,8 @@ import com.gcr.structs.annotation.GcRadarToInclude;
  * annotation.</li>
  * <li>The member is annotated by using the {@link GcRadarToInclude} annotation</li>
  * <ul>
- * 
+ *
+ * @param <I> the generic type
  * @since 0.2
  * @author R.daneel.olivaw
  */
