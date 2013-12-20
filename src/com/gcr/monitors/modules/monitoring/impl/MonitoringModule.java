@@ -19,6 +19,9 @@ import java.lang.Thread.State;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 
 import com.gcr.monitors.modules.monitoring.MonitoringModuleInterface;
 import com.gcr.monitors.modules.notification.NotificationModuleInterface;
@@ -41,11 +44,15 @@ public abstract class MonitoringModule implements MonitoringModuleInterface {
 	/** The notification module. */
 	private NotificationModuleInterface notificationMod;
 
-	/** The stop flag that is set when the monitoring thread is stopped. */
+	private final ReentrantLock lock = new ReentrantLock();
 
+	private Condition lockTillFinish;
+
+	/** The stop flag that is set when the monitoring thread is stopped. */
 	protected MonitoringModule(
 			List<AbstractObjectRefrenceKey<Object>> keyCollection) {
 		monitorThread = new MonitorThread(keyCollection);
+		lockTillFinish = lock.newCondition();
 	}
 
 	/**
@@ -105,6 +112,26 @@ public abstract class MonitoringModule implements MonitoringModuleInterface {
 
 		return State.RUNNABLE;
 	}
+
+	public void lock() throws InterruptedException {
+		try {
+			lock.lock();
+			lockTillFinish.await();
+		} finally {
+			lock.unlock();
+		}
+	}
+
+	public void lock(long time, TimeUnit unit) throws InterruptedException {
+		try {
+			lock.lock();
+			lockTillFinish.await(time, unit);
+		} finally {
+			lock.unlock();
+		}
+	}
+
+	// ===========INNER CLASSES==========
 
 	/*
 	 * The Class MonitorThread is the thread class.
@@ -172,9 +199,12 @@ public abstract class MonitoringModule implements MonitoringModuleInterface {
 				Thread.yield();
 			}
 
-			// release locks if any
-			synchronized (MonitoringModule.this) {
-				MonitoringModule.this.notifyAll();
+			try {
+				lock.lock();
+				// release locks if any
+				lockTillFinish.signalAll();
+			} finally {
+				lock.unlock();
 			}
 		}
 

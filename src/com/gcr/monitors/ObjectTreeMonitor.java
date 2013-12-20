@@ -18,6 +18,7 @@ package com.gcr.monitors;
 import java.lang.Thread.State;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import com.gcr.callbacks.GcRadarCallback;
 import com.gcr.monitors.modules.in.impl.TreeInputModule;
@@ -241,9 +242,7 @@ public class ObjectTreeMonitor<I> {
 					"Cannot lock if monitor is not running");
 		}
 
-		synchronized (this.monitoringMod) {
-			this.monitoringMod.wait();
-		}
+		monitoringMod.lock();
 	}
 
 	/**
@@ -254,27 +253,25 @@ public class ObjectTreeMonitor<I> {
 	 * <li>The waiting thread is interrupted by some other thread</li>
 	 * <li>The timeout runs-out</li>
 	 * <li>The monitoring is stopped by calling the
-	 * {@link ObjectTreeMonitor#startMonitoring()} method</li>
 	 * </ul>
 	 * 
-	 * @param timeout
-	 *            the timeout
+	 * @param time
+	 *            the time
+	 * @param unit
+	 *            the unit
 	 * @throws InterruptedException
 	 *             in case the waiting thread is interrupted
-	 * @throws UnsupportedOperationException
-	 *             in case the monitor is not running
+	 *             {@link ObjectTreeMonitor#startMonitoring()} method</li> </ul>
 	 * @since 0.4
 	 */
-	public void lock(long timeout) throws InterruptedException {
+	public void lock(long time, TimeUnit unit) throws InterruptedException {
 
 		if (!isLockable()) {
 			throw new UnsupportedOperationException(
 					"Cannot lock if monitor is not running");
 		}
 
-		synchronized (this.monitoringMod) {
-			this.monitoringMod.wait(timeout);
-		}
+		monitoringMod.lock(time, unit);
 	}
 
 	private boolean isLockable() {
