@@ -2,6 +2,9 @@ package com.gcr.structs;
 
 /**
  * The Enum MonitorState is used by monitors to reflect their state.
+ * 
+ * @author R.daneel.olivaw
+ * @since 0.4
  */
 public enum MonitorState {
 
