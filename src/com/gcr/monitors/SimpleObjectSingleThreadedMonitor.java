@@ -45,7 +45,7 @@ public class SimpleObjectSingleThreadedMonitor<I> {
 	private MonitoringModule monitoringMod;
 	private NotificationModule notificationMod;
 
-	MonitorState state = MonitorState.NEW;
+	private MonitorState state = MonitorState.NEW;
 
 	/**
 	 * The constructor for creating the
@@ -92,7 +92,7 @@ public class SimpleObjectSingleThreadedMonitor<I> {
 	 */
 	public <T extends I> boolean addObject(T object, String identifier,
 			GcRadarCallback callback) {
-		if (state == MonitorState.TERMINATED) {
+		if (!isMonitorReady()) {
 			throw new UnsupportedOperationException(
 					"Objects can not be added after the moter has been stopped");
 		}
@@ -131,7 +131,7 @@ public class SimpleObjectSingleThreadedMonitor<I> {
 	 *             {@link stopMonitoring()} method.
 	 */
 	public <T extends I> boolean addObject(T object, GcRadarCallback callback) {
-		if (state == MonitorState.TERMINATED) {
+		if (!isMonitorReady()) {
 			throw new UnsupportedOperationException(
 					"Objects can not be added after the moter has been stopped");
 		}
@@ -163,7 +163,7 @@ public class SimpleObjectSingleThreadedMonitor<I> {
 	 *             {@link stopMonitoring()} method.
 	 */
 	public boolean removeObject(String objectKey) {
-		if (state == MonitorState.TERMINATED) {
+		if (!isMonitorReady()) {
 			throw new UnsupportedOperationException(
 					"Objects can not be removed after the moter has been stopped");
 		}
@@ -282,6 +282,15 @@ public class SimpleObjectSingleThreadedMonitor<I> {
 		} else {
 			return true;
 		}
+	}
+	
+	/**
+	 * Checks if is monitor ready.
+	 *
+	 * @return true, if is monitor is ready
+	 */
+	private boolean isMonitorReady() {
+		return (state == MonitorState.RUNNING || state == MonitorState.NEW);
 	}
 
 	// ****************** INNER-CLASSES ***********************

@@ -47,7 +47,7 @@ public class SingleObjectSingleThreadedLog4jMonitor<I> {
 	private MonitoringModule monitoringMod;
 	private NotificationModuleInterface notificationMod;
 
-	MonitorState state = MonitorState.NEW;
+	private MonitorState state = MonitorState.NEW;
 
 	/**
 	 * The constructor for creating the
@@ -93,7 +93,7 @@ public class SingleObjectSingleThreadedLog4jMonitor<I> {
 	 */
 	public <T extends I> boolean addObject(T object, String identifier) {
 
-		if (state == MonitorState.TERMINATED) {
+		if (!isMonitorReady()) {
 			throw new UnsupportedOperationException(
 					"Objects can not be added after the moter has been stopped");
 		}
@@ -129,7 +129,7 @@ public class SingleObjectSingleThreadedLog4jMonitor<I> {
 	 *             {@link stopMonitoring()} method.
 	 */
 	public <T extends I> boolean addObject(T object) {
-		if (state == MonitorState.TERMINATED) {
+		if (!isMonitorReady()) {
 			throw new UnsupportedOperationException(
 					"Objects can not be added after the moter has been stopped");
 		}
@@ -162,7 +162,7 @@ public class SingleObjectSingleThreadedLog4jMonitor<I> {
 	 */
 	public boolean removeObject(String objectKey) {
 
-		if (state == MonitorState.TERMINATED) {
+		if (!isMonitorReady()) {
 			throw new UnsupportedOperationException(
 					"Objects can not be removed after the moter has been stopped");
 		}
@@ -281,6 +281,15 @@ public class SingleObjectSingleThreadedLog4jMonitor<I> {
 		} else {
 			return true;
 		}
+	}
+	
+	/**
+	 * Checks if is monitor ready.
+	 *
+	 * @return true, if is monitor is ready
+	 */
+	private boolean isMonitorReady() {
+		return (state == MonitorState.RUNNING || state == MonitorState.NEW);
 	}
 
 	// ****************** INNER-CLASSES ***********************

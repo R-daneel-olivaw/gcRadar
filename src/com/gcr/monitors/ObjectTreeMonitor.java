@@ -76,7 +76,7 @@ public class ObjectTreeMonitor<I> {
 	private MonitoringModule monitoringMod;
 	private NotificationModule notificationMod;
 
-	MonitorState state = MonitorState.NEW;
+	private MonitorState state = MonitorState.NEW;
 
 	/**
 	 * Instantiates a new object tree monitor.
