@@ -15,7 +15,6 @@ along with gcRadar.  If not, see <http://www.gnu.org/licenses/>.
 
 package com.gcr.monitors;
 
-import java.lang.Thread.State;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -99,9 +98,9 @@ public class SimpleObjectSingleThreadedMonitor<I> {
 		}
 
 		if (inMod.addObject(object, identifier, callback)) {
-			State monitoringStatus = monitoringMod.getStatus();
+			MonitorState monitoringModuleStatus = monitoringMod.getMonitoringModuleStatus();
 
-			if (monitoringStatus == State.TERMINATED) {
+			if (monitoringModuleStatus == MonitorState.TERMINATED) {
 				startMonitoring();
 			}
 
@@ -138,9 +137,9 @@ public class SimpleObjectSingleThreadedMonitor<I> {
 		}
 
 		if (inMod.addObject(object, callback)) {
-			State monitoringStatus = monitoringMod.getStatus();
+			MonitorState monitoringModuleStatus = monitoringMod.getMonitoringModuleStatus();
 
-			if (monitoringStatus == State.TERMINATED) {
+			if (monitoringModuleStatus == MonitorState.TERMINATED) {
 				startMonitoring();
 			}
 

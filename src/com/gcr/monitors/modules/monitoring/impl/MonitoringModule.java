@@ -15,7 +15,6 @@ along with gcRadar.  If not, see <http://www.gnu.org/licenses/>.
 
 package com.gcr.monitors.modules.monitoring.impl;
 
-import java.lang.Thread.State;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -27,6 +26,7 @@ import com.gcr.monitors.ObjectTreeMonitor;
 import com.gcr.monitors.modules.monitoring.MonitoringModuleInterface;
 import com.gcr.monitors.modules.notification.NotificationModuleInterface;
 import com.gcr.structs.AbstractObjectRefrenceKey;
+import com.gcr.structs.MonitorState;
 
 /**
  * The Class MonitoringModule is the implementation of the interface.
@@ -104,14 +104,14 @@ public abstract class MonitoringModule implements MonitoringModuleInterface {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see com.gcr.monitors.modules.monitoring.MonitoringModuleInterface#getStatus()
+	 * @see com.gcr.monitors.modules.monitoring.MonitoringModuleInterface#getMonitoringModuleStatus()
 	 */
-	public State getStatus() {
+	public MonitorState getMonitoringModuleStatus() {
 		if (monitorThread == null) {
-			return Thread.State.TERMINATED;
+			return MonitorState.TERMINATED;
 		}
 
-		return State.RUNNABLE;
+		return MonitorState.RUNNING;
 	}
 
 	/**

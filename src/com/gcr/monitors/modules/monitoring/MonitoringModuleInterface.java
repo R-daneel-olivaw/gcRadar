@@ -15,9 +15,8 @@ along with gcRadar.  If not, see <http://www.gnu.org/licenses/>.
 
 package com.gcr.monitors.modules.monitoring;
 
-import java.lang.Thread.State;
-
 import com.gcr.monitors.modules.notification.NotificationModuleInterface;
+import com.gcr.structs.MonitorState;
 
 /**
  * The Interface MonitoringModuleInterface. This interface needs to be implemented by all
@@ -56,5 +55,5 @@ public interface MonitoringModuleInterface
      * @return the status
      * @see Thread.State
      */
-    public State getStatus();
+    public MonitorState getMonitoringModuleStatus();
 }

@@ -15,7 +15,6 @@ along with gcRadar.  If not, see <http://www.gnu.org/licenses/>.
 
 package com.gcr.monitors;
 
-import java.lang.Thread.State;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -66,13 +65,14 @@ import com.gcr.structs.annotation.GcRadarToInclude;
  * annotation.</li>
  * <li>The member is annotated by using the {@link GcRadarToInclude} annotation</li>
  * <ul>
- *
- * @param <I> the generic type
+ * 
+ * @param <I>
+ *            the generic type
  * @since 0.2
  * @author R.daneel.olivaw
  */
 public class ObjectTreeMonitor<I> {
-	private IndividualObjectFeed_Impl inMod;
+	private TreeInputModule_Impl treeInputMod;
 	private MonitoringModule monitoringMod;
 	private NotificationModule notificationMod;
 
@@ -85,12 +85,10 @@ public class ObjectTreeMonitor<I> {
 	 *            for choosing the operating mode of the monitor
 	 */
 	public ObjectTreeMonitor(boolean isOptimistic) {
-		this.inMod = new IndividualObjectFeed_Impl(isOptimistic);
+		this.treeInputMod = new TreeInputModule_Impl(isOptimistic);
 		this.monitoringMod = new SingleThreadedMonitor_Impl(
-				((IndividualObjectFeed_Impl) inMod).getWatchList());
+				((TreeInputModule_Impl) treeInputMod).getWatchList());
 		this.notificationMod = new CallbackNotificationModule_Impl();
-
-		// stopFlag = false;
 	}
 
 	/**
@@ -120,15 +118,16 @@ public class ObjectTreeMonitor<I> {
 	 */
 	public <T extends I> boolean addObject(T object, String identifier,
 			GcRadarCallback callback) {
-		if (state == MonitorState.TERMINATED) {
+		if (!isMonitorReady()) {
 			throw new UnsupportedOperationException(
 					"Objects can not be added after the moter has been stopped");
 		}
 
-		if (inMod.addObject(object, identifier, callback)) {
-			State monitoringStatus = monitoringMod.getStatus();
+		if (treeInputMod.addObject(object, identifier, callback)) {
+			MonitorState monitoringModuleStatus = monitoringMod
+					.getMonitoringModuleStatus();
 
-			if (monitoringStatus == State.TERMINATED) {
+			if (monitoringModuleStatus == MonitorState.TERMINATED) {
 				startMonitoring();
 			}
 
@@ -162,12 +161,12 @@ public class ObjectTreeMonitor<I> {
 	 *             {@link stopMonitoring()} method.
 	 */
 	public boolean removeObject(String objectKey) {
-		if (state == MonitorState.TERMINATED) {
+		if (!isMonitorReady()) {
 			throw new UnsupportedOperationException(
 					"Objects can not be removed after the moter has been stopped");
 		}
 
-		return inMod.removeObject(objectKey);
+		return treeInputMod.removeObject(objectKey);
 	}
 
 	/**
@@ -179,7 +178,6 @@ public class ObjectTreeMonitor<I> {
 	 */
 	public boolean startMonitoring() {
 		notificationMod.notifyStartMonitoring();
-		// stopFlag = false;
 		state = MonitorState.RUNNING;
 
 		return monitoringMod.startMonitoring(notificationMod);
@@ -194,7 +192,6 @@ public class ObjectTreeMonitor<I> {
 	 */
 	public boolean stopMonitoring() {
 		notificationMod.notifyStopMonitoring();
-		// stopFlag = true;
 		state = MonitorState.HELD;
 
 		return monitoringMod.stopMonitoring(notificationMod);
@@ -207,7 +204,7 @@ public class ObjectTreeMonitor<I> {
 	 * @return a set of alias objects
 	 */
 	public Set<AbstractObjectRefrenceKey<Object>> getPendingObjects() {
-		return inMod.getPendingObjects();
+		return treeInputMod.getPendingObjects();
 	}
 
 	/**
@@ -217,7 +214,7 @@ public class ObjectTreeMonitor<I> {
 	 * @return the pending objects count
 	 */
 	public int getPendingObjectsCount() {
-		return inMod.getPendingObjectsCount();
+		return treeInputMod.getPendingObjectsCount();
 	}
 
 	/**
@@ -275,6 +272,11 @@ public class ObjectTreeMonitor<I> {
 		monitoringMod.lock(time, unit);
 	}
 
+	/**
+	 * Checks if monitor can perform lock.
+	 *
+	 * @return true, if lockable
+	 */
 	private boolean isLockable() {
 		// I faced a decision here as to if we should allow a thread to be
 		// locked if the monitor is not running. I decided not to allow this as
@@ -287,10 +289,19 @@ public class ObjectTreeMonitor<I> {
 		}
 	}
 
+	/**
+	 * Checks if is monitor ready.
+	 *
+	 * @return true, if is monitor is ready
+	 */
+	private boolean isMonitorReady() {
+		return (state == MonitorState.RUNNING || state == MonitorState.NEW);
+	}
+
 	// ****************** INNER-CLASSES ***********************
 
-	private class IndividualObjectFeed_Impl extends TreeInputModule {
-		public IndividualObjectFeed_Impl(boolean isOptimistic) {
+	private class TreeInputModule_Impl extends TreeInputModule {
+		public TreeInputModule_Impl(boolean isOptimistic) {
 			super(isOptimistic);
 		}
 
