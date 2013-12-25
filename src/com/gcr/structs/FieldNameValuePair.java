@@ -15,8 +15,6 @@ along with gcRadar.  If not, see <http://www.gnu.org/licenses/>.
 
 package com.gcr.structs;
 
-import com.gcr.monitors.modules.in.GcRadarAnnotationScanner;
-
 /**
  * The Class FieldNameValuePair is used by {@link GcRadarAnnotationScanner} for
  * recording the eligible fields. It is used to store name-value pairs of type
@@ -28,79 +26,71 @@ import com.gcr.monitors.modules.in.GcRadarAnnotationScanner;
  * @param <T>
  *            the generic type
  */
-public class FieldNameValuePair<T>
-{
+public class FieldNameValuePair<T> {
 
-    private T refrenceValue;
-    private String fieldName;
-    private Class<? extends Object> valueClazz;
+	private T refrenceValue;
+	private String fieldName;
+	private Class<? extends Object> valueClazz;
 
-    /**
-     * Instantiates a new field name value pair.
-     * 
-     * @param fieldName
-     *            the field name
-     * @param refrenceValue
-     *            the reference value
-     */
-    public FieldNameValuePair(String fieldName, T refrenceValue)
-    {
-	this.setFieldName(fieldName);
-	this.setRefrenceValue(refrenceValue);
-	this.setValueClazz(refrenceValue.getClass());
-    }
+	/**
+	 * Instantiates a new field name value pair.
+	 * 
+	 * @param fieldName
+	 *            the field name
+	 * @param refrenceValue
+	 *            the reference value
+	 */
+	public FieldNameValuePair(String fieldName, T refrenceValue) {
+		this.setFieldName(fieldName);
+		this.setRefrenceValue(refrenceValue);
+		this.setValueClazz(refrenceValue.getClass());
+	}
 
-    /**
-     * Gets the refrence value.
-     * 
-     * @return the refrence value
-     */
-    public T getRefrenceValue()
-    {
-	return refrenceValue;
-    }
+	/**
+	 * Gets the refrence value.
+	 * 
+	 * @return the refrence value
+	 */
+	public T getRefrenceValue() {
+		return refrenceValue;
+	}
 
-    private void setRefrenceValue(T refrenceValue)
-    {
-	this.refrenceValue = refrenceValue;
-    }
+	private void setRefrenceValue(T refrenceValue) {
+		this.refrenceValue = refrenceValue;
+	}
 
-    /**
-     * Gets the field name.
-     * 
-     * @return the field name
-     */
-    public String getFieldName()
-    {
-	return fieldName;
-    }
+	/**
+	 * Gets the field name.
+	 * 
+	 * @return the field name
+	 */
+	public String getFieldName() {
+		return fieldName;
+	}
 
-    private void setFieldName(String fieldName)
-    {
-	this.fieldName = fieldName;
-    }
+	private void setFieldName(String fieldName) {
+		this.fieldName = fieldName;
+	}
 
-    /**
-     * Gets the class of the referred object.
-     * 
-     * @return the value clazz
-     */
-    public Class<? extends Object> getValueClazz()
-    {
-	return valueClazz;
-    }
+	/**
+	 * Gets the class of the referred object.
+	 * 
+	 * @return the value clazz
+	 */
+	public Class<? extends Object> getValueClazz() {
+		return valueClazz;
+	}
 
-    private void setValueClazz(Class<? extends Object> class1)
-    {
-	this.valueClazz = class1;
-    }
+	private void setValueClazz(Class<? extends Object> class1) {
+		this.valueClazz = class1;
+	}
 
-    // The toString() method should be removed as it can be used to steal
-    // information
-    // @Override
-    // public String toString() {
-    // return "FieldNameValuePair [refrenceValue=" + refrenceValue
-    // + ", fieldName=" + fieldName + ", valueClazz=" + valueClazz
-    // + "]";
-    // }
+	// The toString() method should be removed as it can be used to steal
+	// information
+	// @Override
+	// public String toString() {
+	// return "FieldNameValuePair [refrenceValue=" + refrenceValue
+	// + ", fieldName=" + fieldName + ", valueClazz=" + valueClazz
+	// + "]";
+	// }
 }

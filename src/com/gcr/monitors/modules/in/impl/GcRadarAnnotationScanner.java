@@ -13,15 +13,15 @@ You should have received a copy of the GNU Lesser General Public License
 along with gcRadar.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.gcr.monitors.modules.in;
+package com.gcr.monitors.modules.in.impl;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.gcr.monitors.modules.in.impl.TreeInputModule;
 import com.gcr.structs.FieldNameValuePair;
+import com.gcr.structs.annotation.GcRadarAnnotationScannerInterface;
 import com.gcr.structs.annotation.GcRadarNotToInclude;
 import com.gcr.structs.annotation.GcRadarToInclude;
 
@@ -30,10 +30,13 @@ import com.gcr.structs.annotation.GcRadarToInclude;
  * scanning classes to list eligible fields to be added to the monitoring by the
  * GcMonitor.
  * 
+ * The class has package level implementation to prevent mistaken an unnecessary
+ * instantiation.
+ * 
  * @author R.daneel.olivaw
  * @since 0.2
  */
-public class GcRadarAnnotationScanner {
+class GcRadarAnnotationScanner implements GcRadarAnnotationScannerInterface {
 
 	/**
 	 * Gets the all fields.
@@ -49,6 +52,7 @@ public class GcRadarAnnotationScanner {
 	 *            the is optimistic traversal
 	 * @return the all the eligible fields
 	 */
+	@Override
 	public <T> List<? extends FieldNameValuePair<? extends Object>> getAllFields(
 			T object, Object key, boolean isOptimistic) {
 		if (isOptimistic) {
