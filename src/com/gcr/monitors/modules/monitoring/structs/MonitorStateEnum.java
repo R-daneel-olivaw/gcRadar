@@ -13,7 +13,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with gcRadar.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.gcr.structs;
+package com.gcr.monitors.modules.monitoring.structs;
 
 /**
  * The Enum MonitorState is used by monitors to reflect their state.

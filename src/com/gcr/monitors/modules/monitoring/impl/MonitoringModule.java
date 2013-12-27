@@ -24,9 +24,9 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import com.gcr.monitors.ObjectTreeMonitor;
 import com.gcr.monitors.modules.monitoring.MonitoringModuleInterface;
+import com.gcr.monitors.modules.monitoring.structs.MonitorStateEnum;
 import com.gcr.monitors.modules.notification.NotificationModuleInterface;
 import com.gcr.structs.AbstractObjectRefrenceKey;
-import com.gcr.structs.MonitorStateEnum;
 
 /**
  * The Class MonitoringModule is the implementation of the interface.

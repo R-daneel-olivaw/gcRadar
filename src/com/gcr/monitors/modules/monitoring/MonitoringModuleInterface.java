@@ -15,8 +15,8 @@ along with gcRadar.  If not, see <http://www.gnu.org/licenses/>.
 
 package com.gcr.monitors.modules.monitoring;
 
+import com.gcr.monitors.modules.monitoring.structs.MonitorStateEnum;
 import com.gcr.monitors.modules.notification.NotificationModuleInterface;
-import com.gcr.structs.MonitorStateEnum;
 
 /**
  * The Interface MonitoringModuleInterface. This interface needs to be implemented by all

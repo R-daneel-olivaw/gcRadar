@@ -22,9 +22,9 @@ import java.util.concurrent.TimeUnit;
 import com.gcr.callbacks.GcRadarCallback;
 import com.gcr.monitors.modules.in.impl.InputModule;
 import com.gcr.monitors.modules.monitoring.impl.MonitoringModule;
+import com.gcr.monitors.modules.monitoring.structs.MonitorStateEnum;
 import com.gcr.monitors.modules.notification.impl.NotificationModule;
 import com.gcr.structs.AbstractObjectRefrenceKey;
-import com.gcr.structs.MonitorStateEnum;
 
 /**
  * This Object monitor runs on a worker thread and captures GC events on the

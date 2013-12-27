@@ -23,9 +23,9 @@ import org.apache.log4j.Logger;
 
 import com.gcr.monitors.modules.in.impl.InputModule;
 import com.gcr.monitors.modules.monitoring.impl.MonitoringModule;
+import com.gcr.monitors.modules.monitoring.structs.MonitorStateEnum;
 import com.gcr.monitors.modules.notification.NotificationModuleInterface;
 import com.gcr.structs.AbstractObjectRefrenceKey;
-import com.gcr.structs.MonitorStateEnum;
 
 /**
  * This Object monitor runs on a worker thread and captures GC events on the
