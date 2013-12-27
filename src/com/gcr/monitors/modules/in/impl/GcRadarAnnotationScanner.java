@@ -20,10 +20,10 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.gcr.monitors.modules.in.structs.annotation.GcRadarAnnotationScannerInterface;
+import com.gcr.monitors.modules.in.structs.annotation.GcRadarNotToInclude;
+import com.gcr.monitors.modules.in.structs.annotation.GcRadarToInclude;
 import com.gcr.structs.FieldNameValuePair;
-import com.gcr.structs.annotation.GcRadarAnnotationScannerInterface;
-import com.gcr.structs.annotation.GcRadarNotToInclude;
-import com.gcr.structs.annotation.GcRadarToInclude;
 
 /**
  * The Class GcRadarAnnotationScanner is used by the {@link TreeInputModule} for

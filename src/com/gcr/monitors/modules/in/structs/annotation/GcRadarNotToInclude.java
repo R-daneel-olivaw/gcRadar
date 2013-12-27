@@ -13,7 +13,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with gcRadar.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.gcr.structs.annotation;
+package com.gcr.monitors.modules.in.structs.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -23,15 +23,16 @@ import java.lang.annotation.Target;
 import com.gcr.monitors.ObjectTreeMonitor;
 
 /**
- * The annotation GcRadarToInclude is used to signal that an entity is to
+ * The annotation GcRadarNotToInclude is used to signal that an entity is not to
  * be listed when using the {@link ObjectTreeMonitor}.
  * 
  * @author R.daneel.olivaw
  * @since 0.2
  * 
  */
-@Target(ElementType.FIELD)
+@Target({ ElementType.FIELD, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface GcRadarToInclude {
-	String key() default "";
+public @interface GcRadarNotToInclude
+{
+
 }

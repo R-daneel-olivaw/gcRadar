@@ -25,10 +25,10 @@ import java.util.TreeSet;
 import com.gcr.callbacks.GcRadarCallback;
 import com.gcr.monitors.ObjectTreeMonitor;
 import com.gcr.monitors.modules.in.InputModuleInterface;
+import com.gcr.monitors.modules.in.structs.annotation.GcRadarAnnotationScannerInterface;
 import com.gcr.structs.AbstractObjectRefrenceKey;
 import com.gcr.structs.AbstractObjectRefrenceKeyComparator;
 import com.gcr.structs.FieldNameValuePair;
-import com.gcr.structs.annotation.GcRadarAnnotationScannerInterface;
 
 /**
  * The Class TreeInputModule is used by the {@link ObjectTreeMonitor} for most
