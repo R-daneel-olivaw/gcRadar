@@ -301,7 +301,7 @@ public class ObjectTreeMonitor<I> {
 	
 	public void setMonitorThreadYeildController(MonitorThreadYeildController yeildController)
 	{
-		monitoringMod.setMonitorThreadYeildController(yeildController);
+		monitoringMod.setMonitorThreadYieldController(yeildController);
 	}
 
 	// ****************** INNER-CLASSES ***********************

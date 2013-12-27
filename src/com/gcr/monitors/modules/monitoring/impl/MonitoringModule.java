@@ -171,7 +171,7 @@ public abstract class MonitoringModule implements MonitoringModuleInterface {
 		}
 	}
 	
-	public void setMonitorThreadYeildController(MonitorThreadYeildController yeildController)
+	public void setMonitorThreadYieldController(MonitorThreadYeildController yeildController)
 	{
 		if(yeildController==null)
 		{
