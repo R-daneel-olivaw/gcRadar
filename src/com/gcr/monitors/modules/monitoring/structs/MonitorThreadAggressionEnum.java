@@ -43,20 +43,30 @@ public enum MonitorThreadAggressionEnum implements MonitorThreadYeildController 
 	 * {@link MonitorThreadAggressionEnum#LOW_AGGRESSION} and
 	 * {@link MonitorThreadAggressionEnum#MEDIUM_AGGRESSION}.
 	 */
-	HIGH_AGGRESSION(100), HIGHEST_AGGRESSION(Integer.MAX_VALUE);
+	HIGH_AGGRESSION(100),
+	/**
+	 * The highest aggression configurable. In this mode the thread will yield
+	 * execution only when
+	 * <ul>
+	 * <li>countSinceYield is >= {@link Integer#MAX_VALUE}</li>
+	 * <li>the monitoring thread completes an iteration of the objects under
+	 * monitoring</li>
+	 * </ul>
+	 */
+	HIGHEST_AGGRESSION(Integer.MAX_VALUE);
 
 	private AtomicInteger maximum = new AtomicInteger();
 
-	MonitorThreadAggressionEnum(int max) {
+	private MonitorThreadAggressionEnum(int max) {
 		maximum.set(max);
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * Returns true if countSinceYield >= the maximum count permissible for that
+	 * aggression level.
 	 * 
-	 * @see
-	 * com.gcr.monitors.modules.monitoring.structs.MonitorThreadYeildController
-	 * #shouldYield(int)
+	 * @see com.gcr.monitors.modules.monitoring.structs.MonitorThreadYeildController
+	 *      #shouldYield(int)
 	 */
 	public boolean shouldYield(int countSinceYield) {
 		int value = maximum.intValue();

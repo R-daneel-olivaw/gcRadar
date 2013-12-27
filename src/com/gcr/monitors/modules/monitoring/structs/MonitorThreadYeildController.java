@@ -15,6 +15,24 @@ along with gcRadar.  If not, see <http://www.gnu.org/licenses/>.
 
 package com.gcr.monitors.modules.monitoring.structs;
 
+import com.gcr.monitors.modules.monitoring.impl.MonitoringModule;
+
+/**
+ * The Interface MonitorThreadYeildController is used to control the execution
+ * rate of the {@link MonitoringModule} Thread in the {@link MonitoringModule}.
+ * 
+ * @author R.daneel.olivaw
+ * @since 0.4
+ */
 public interface MonitorThreadYeildController {
+
+	/**
+	 * This method is used to decide if the monitoring thread should yield
+	 * execution if should yield.
+	 * 
+	 * @param countSinceYield
+	 *            the count since last yield
+	 * @return true, if the thread should yield
+	 */
 	boolean shouldYield(int countSinceYield);
 }

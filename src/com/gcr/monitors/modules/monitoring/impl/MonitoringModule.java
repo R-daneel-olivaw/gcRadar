@@ -170,14 +170,23 @@ public abstract class MonitoringModule implements MonitoringModuleInterface {
 			lock.unlock();
 		}
 	}
-	
-	public void setMonitorThreadYieldController(MonitorThreadYeildController yeildController)
-	{
-		if(yeildController==null)
-		{
-			throw new NullPointerException("MonitorThreadYeildController can not be null");
+
+	/**
+	 * Sets the monitor thread yield controller.
+	 * 
+	 * @param yeildController
+	 *            the new monitor thread yield controller
+	 * @throws NullPointerException
+	 *             if yeildController id null
+	 * @since 0.4
+	 */
+	public void setMonitorThreadYieldController(
+			MonitorThreadYeildController yeildController) {
+		if (yeildController == null) {
+			throw new NullPointerException(
+					"MonitorThreadYeildController can not be null");
 		}
-		
+
 		this.yeildController = yeildController;
 	}
 
