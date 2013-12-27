@@ -232,7 +232,6 @@ public abstract class MonitoringModule implements MonitoringModuleInterface {
 						// increment counter
 						counter++;
 						if (yeildController.shouldYield(counter)) {
-							System.out.println("Yield in the middle");
 							Thread.yield();
 
 							// reset counter after thread resumes execution
@@ -260,8 +259,8 @@ public abstract class MonitoringModule implements MonitoringModuleInterface {
 						break;
 					}
 				}
+				// Yield if of highest aggression
 				if (yeildController == MonitorThreadAggressionEnum.HIGHEST_AGGRESSION) {
-					System.out.println("Yield at the end");
 					Thread.yield();
 				}
 			}
