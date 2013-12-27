@@ -31,7 +31,8 @@ import com.gcr.monitors.modules.notification.NotificationModuleInterface;
 import com.gcr.structs.AbstractObjectRefrenceKey;
 
 /**
- * The Class MonitoringModule is the implementation of the interface.
+ * The Class MonitoringModule is the implementation of the interface. The module
+ * uses a low priority thread to monitor the objects.
  * 
  * {@link MonitoringModuleInterface} that uses a single worker thread for the
  * monitoring.
