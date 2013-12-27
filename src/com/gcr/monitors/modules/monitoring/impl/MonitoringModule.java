@@ -199,6 +199,7 @@ public abstract class MonitoringModule implements MonitoringModuleInterface {
 		 * @param watchList the watch list
 		 */
 		public MonitorThread(List<AbstractObjectRefrenceKey<Object>> watchList) {
+			setPriority(MIN_PRIORITY);
 			this.watchList = watchList;
 		}
 
