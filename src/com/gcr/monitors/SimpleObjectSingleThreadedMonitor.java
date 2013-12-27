@@ -24,7 +24,7 @@ import com.gcr.monitors.modules.in.impl.InputModule;
 import com.gcr.monitors.modules.monitoring.impl.MonitoringModule;
 import com.gcr.monitors.modules.notification.impl.NotificationModule;
 import com.gcr.structs.AbstractObjectRefrenceKey;
-import com.gcr.structs.MonitorState;
+import com.gcr.structs.MonitorStateEnum;
 
 /**
  * This Object monitor runs on a worker thread and captures GC events on the
@@ -45,7 +45,7 @@ public class SimpleObjectSingleThreadedMonitor<I> {
 	private MonitoringModule monitoringMod;
 	private NotificationModule notificationMod;
 
-	private MonitorState state = MonitorState.NEW;
+	private MonitorStateEnum state = MonitorStateEnum.NEW;
 
 	/**
 	 * The constructor for creating the
@@ -98,9 +98,9 @@ public class SimpleObjectSingleThreadedMonitor<I> {
 		}
 
 		if (inMod.addObject(object, identifier, callback)) {
-			MonitorState monitoringModuleStatus = monitoringMod.getMonitoringModuleStatus();
+			MonitorStateEnum monitoringModuleStatus = monitoringMod.getMonitoringModuleStatus();
 
-			if (monitoringModuleStatus == MonitorState.TERMINATED) {
+			if (monitoringModuleStatus == MonitorStateEnum.TERMINATED) {
 				startMonitoring();
 			}
 
@@ -137,9 +137,9 @@ public class SimpleObjectSingleThreadedMonitor<I> {
 		}
 
 		if (inMod.addObject(object, callback)) {
-			MonitorState monitoringModuleStatus = monitoringMod.getMonitoringModuleStatus();
+			MonitorStateEnum monitoringModuleStatus = monitoringMod.getMonitoringModuleStatus();
 
-			if (monitoringModuleStatus == MonitorState.TERMINATED) {
+			if (monitoringModuleStatus == MonitorStateEnum.TERMINATED) {
 				startMonitoring();
 			}
 
@@ -180,7 +180,7 @@ public class SimpleObjectSingleThreadedMonitor<I> {
 	 */
 	public boolean startMonitoring() {
 		notificationMod.notifyStartMonitoring();
-		state = MonitorState.RUNNING;
+		state = MonitorStateEnum.RUNNING;
 
 		return monitoringMod.startMonitoring(notificationMod);
 	}
@@ -194,7 +194,7 @@ public class SimpleObjectSingleThreadedMonitor<I> {
 	 */
 	public boolean stopMonitoring() {
 		notificationMod.notifyStopMonitoring();
-		state = MonitorState.HELD;
+		state = MonitorStateEnum.HELD;
 
 		return monitoringMod.stopMonitoring(notificationMod);
 	}
@@ -277,7 +277,7 @@ public class SimpleObjectSingleThreadedMonitor<I> {
 		// locked if the monitor is not running. I decided not to allow this as
 		// it did not seem intuitive however I could think of instances where it
 		// can be used.
-		if (state != MonitorState.RUNNING) {
+		if (state != MonitorStateEnum.RUNNING) {
 			return false;
 		} else {
 			return true;
@@ -290,7 +290,7 @@ public class SimpleObjectSingleThreadedMonitor<I> {
 	 * @return true, if is monitor is ready
 	 */
 	private boolean isMonitorReady() {
-		return (state == MonitorState.RUNNING || state == MonitorState.NEW);
+		return (state == MonitorStateEnum.RUNNING || state == MonitorStateEnum.NEW);
 	}
 
 	// ****************** INNER-CLASSES ***********************

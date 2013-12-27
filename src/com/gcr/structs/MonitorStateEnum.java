@@ -21,7 +21,7 @@ package com.gcr.structs;
  * @author R.daneel.olivaw
  * @since 0.4
  */
-public enum MonitorState {
+public enum MonitorStateEnum {
 
 	/**
 	 * The new state represents a monitor that has been instantiated but the

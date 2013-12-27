@@ -24,7 +24,7 @@ import com.gcr.monitors.modules.in.impl.TreeInputModule;
 import com.gcr.monitors.modules.monitoring.impl.MonitoringModule;
 import com.gcr.monitors.modules.notification.impl.NotificationModule;
 import com.gcr.structs.AbstractObjectRefrenceKey;
-import com.gcr.structs.MonitorState;
+import com.gcr.structs.MonitorStateEnum;
 import com.gcr.structs.annotation.GcRadarNotToInclude;
 import com.gcr.structs.annotation.GcRadarToInclude;
 
@@ -76,7 +76,7 @@ public class ObjectTreeMonitor<I> {
 	private MonitoringModule monitoringMod;
 	private NotificationModule notificationMod;
 
-	private MonitorState state = MonitorState.NEW;
+	private MonitorStateEnum state = MonitorStateEnum.NEW;
 
 	/**
 	 * Instantiates a new object tree monitor.
@@ -124,10 +124,10 @@ public class ObjectTreeMonitor<I> {
 		}
 
 		if (treeInputMod.addObject(object, identifier, callback)) {
-			MonitorState monitoringModuleStatus = monitoringMod
+			MonitorStateEnum monitoringModuleStatus = monitoringMod
 					.getMonitoringModuleStatus();
 
-			if (monitoringModuleStatus == MonitorState.TERMINATED) {
+			if (monitoringModuleStatus == MonitorStateEnum.TERMINATED) {
 				startMonitoring();
 			}
 
@@ -178,7 +178,7 @@ public class ObjectTreeMonitor<I> {
 	 */
 	public boolean startMonitoring() {
 		notificationMod.notifyStartMonitoring();
-		state = MonitorState.RUNNING;
+		state = MonitorStateEnum.RUNNING;
 
 		return monitoringMod.startMonitoring(notificationMod);
 	}
@@ -192,7 +192,7 @@ public class ObjectTreeMonitor<I> {
 	 */
 	public boolean stopMonitoring() {
 		notificationMod.notifyStopMonitoring();
-		state = MonitorState.HELD;
+		state = MonitorStateEnum.HELD;
 
 		return monitoringMod.stopMonitoring(notificationMod);
 	}
@@ -282,7 +282,7 @@ public class ObjectTreeMonitor<I> {
 		// locked if the monitor is not running. I decided not to allow this as
 		// it did not seem intuitive however I could think of instances where it
 		// can be used.
-		if (state != MonitorState.RUNNING) {
+		if (state != MonitorStateEnum.RUNNING) {
 			return false;
 		} else {
 			return true;
@@ -295,7 +295,7 @@ public class ObjectTreeMonitor<I> {
 	 * @return true, if is monitor is ready
 	 */
 	private boolean isMonitorReady() {
-		return (state == MonitorState.RUNNING || state == MonitorState.NEW);
+		return (state == MonitorStateEnum.RUNNING || state == MonitorStateEnum.NEW);
 	}
 
 	// ****************** INNER-CLASSES ***********************

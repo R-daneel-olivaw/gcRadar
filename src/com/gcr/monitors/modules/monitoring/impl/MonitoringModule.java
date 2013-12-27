@@ -26,7 +26,7 @@ import com.gcr.monitors.ObjectTreeMonitor;
 import com.gcr.monitors.modules.monitoring.MonitoringModuleInterface;
 import com.gcr.monitors.modules.notification.NotificationModuleInterface;
 import com.gcr.structs.AbstractObjectRefrenceKey;
-import com.gcr.structs.MonitorState;
+import com.gcr.structs.MonitorStateEnum;
 
 /**
  * The Class MonitoringModule is the implementation of the interface.
@@ -106,12 +106,12 @@ public abstract class MonitoringModule implements MonitoringModuleInterface {
 	 * 
 	 * @see com.gcr.monitors.modules.monitoring.MonitoringModuleInterface#getMonitoringModuleStatus()
 	 */
-	public MonitorState getMonitoringModuleStatus() {
+	public MonitorStateEnum getMonitoringModuleStatus() {
 		if (monitorThread == null) {
-			return MonitorState.TERMINATED;
+			return MonitorStateEnum.TERMINATED;
 		}
 
-		return MonitorState.RUNNING;
+		return MonitorStateEnum.RUNNING;
 	}
 
 	/**
