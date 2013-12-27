@@ -24,6 +24,7 @@ import org.apache.log4j.Logger;
 import com.gcr.monitors.modules.in.impl.InputModule;
 import com.gcr.monitors.modules.monitoring.impl.MonitoringModule;
 import com.gcr.monitors.modules.monitoring.structs.MonitorStateEnum;
+import com.gcr.monitors.modules.monitoring.structs.MonitorThreadYeildController;
 import com.gcr.monitors.modules.notification.NotificationModuleInterface;
 import com.gcr.structs.AbstractObjectRefrenceKey;
 
@@ -290,6 +291,11 @@ public class SingleObjectSingleThreadedLog4jMonitor<I> {
 	 */
 	private boolean isMonitorReady() {
 		return (state == MonitorStateEnum.RUNNING || state == MonitorStateEnum.NEW);
+	}
+	
+	public void setMonitorThreadYeildController(MonitorThreadYeildController yeildController)
+	{
+		monitoringMod.setMonitorThreadYeildController(yeildController);
 	}
 
 	// ****************** INNER-CLASSES ***********************
