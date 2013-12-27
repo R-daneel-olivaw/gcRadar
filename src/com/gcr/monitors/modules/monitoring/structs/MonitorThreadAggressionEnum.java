@@ -43,18 +43,25 @@ public enum MonitorThreadAggressionEnum implements MonitorThreadYeildController 
 	 * {@link MonitorThreadAggressionEnum#LOW_AGGRESSION} and
 	 * {@link MonitorThreadAggressionEnum#MEDIUM_AGGRESSION}.
 	 */
-	HIGH_AGGRESSION(100);
+	HIGH_AGGRESSION(100), HIGHEST_AGGRESSION(Integer.MAX_VALUE);
 
-	private AtomicInteger maximum;
+	private AtomicInteger maximum = new AtomicInteger();
 
 	MonitorThreadAggressionEnum(int max) {
 		maximum.set(max);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.gcr.monitors.modules.monitoring.structs.MonitorThreadYeildController
+	 * #shouldYield(int)
+	 */
 	public boolean shouldYield(int countSinceYield) {
 		int value = maximum.intValue();
 
-		return (countSinceYield < value);
+		return (countSinceYield >= value);
 	}
 
 }

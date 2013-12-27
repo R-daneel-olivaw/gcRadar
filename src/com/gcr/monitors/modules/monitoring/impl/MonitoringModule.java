@@ -25,6 +25,8 @@ import java.util.concurrent.locks.ReentrantLock;
 import com.gcr.monitors.ObjectTreeMonitor;
 import com.gcr.monitors.modules.monitoring.MonitoringModuleInterface;
 import com.gcr.monitors.modules.monitoring.structs.MonitorStateEnum;
+import com.gcr.monitors.modules.monitoring.structs.MonitorThreadAggressionEnum;
+import com.gcr.monitors.modules.monitoring.structs.MonitorThreadYeildController;
 import com.gcr.monitors.modules.notification.NotificationModuleInterface;
 import com.gcr.structs.AbstractObjectRefrenceKey;
 
@@ -48,6 +50,8 @@ public abstract class MonitoringModule implements MonitoringModuleInterface {
 	private final ReentrantLock lock = new ReentrantLock();
 
 	private Condition lockTillFinish;
+
+	private MonitorThreadYeildController yeildController = MonitorThreadAggressionEnum.HIGHEST_AGGRESSION;
 
 	/** The stop flag that is set when the monitoring thread is stopped. */
 	protected MonitoringModule(
@@ -166,6 +170,16 @@ public abstract class MonitoringModule implements MonitoringModuleInterface {
 			lock.unlock();
 		}
 	}
+	
+	public void setMonitorThreadYeildController(MonitorThreadYeildController yeildController)
+	{
+		if(yeildController==null)
+		{
+			throw new NullPointerException("MonitorThreadYeildController can not be null");
+		}
+		
+		this.yeildController = yeildController;
+	}
 
 	// ===========INNER CLASSES==========
 
@@ -207,9 +221,22 @@ public abstract class MonitoringModule implements MonitoringModuleInterface {
 							.iterator();
 
 					AbstractObjectRefrenceKey<Object> loopBuffer = null;
+					// counter variable for controlling yield
+					int counter = 0;
 					while (iterator.hasNext()) {
 						if (isStopFlag()) {
 							break;
+						}
+
+						// increment counter
+						counter++;
+						if (yeildController.shouldYield(counter)) {
+							System.out.println("Yield in the middle");
+							Thread.yield();
+
+							// reset counter after thread resumes execution
+							// after yield
+							counter = 0;
 						}
 
 						loopBuffer = iterator.next();
@@ -232,7 +259,10 @@ public abstract class MonitoringModule implements MonitoringModuleInterface {
 						break;
 					}
 				}
-				Thread.yield();
+				if (yeildController == MonitorThreadAggressionEnum.HIGHEST_AGGRESSION) {
+					System.out.println("Yield at the end");
+					Thread.yield();
+				}
 			}
 
 			try {
