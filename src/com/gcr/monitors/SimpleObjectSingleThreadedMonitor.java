@@ -294,7 +294,12 @@ public class SimpleObjectSingleThreadedMonitor<I> {
 		return (state == MonitorStateEnum.RUNNING || state == MonitorStateEnum.NEW);
 	}
 	
-	public void setMonitorThreadYeildController(MonitorThreadYieldController yeildController)
+	/**
+	 * Sets the monitor thread yield controller.
+	 *
+	 * @param yeildController the new monitor thread yield controller
+	 */
+	public void setMonitorThreadYieldController(MonitorThreadYieldController yeildController)
 	{
 		monitoringMod.setMonitorThreadYieldController(yeildController);
 	}
