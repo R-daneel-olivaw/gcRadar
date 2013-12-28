@@ -269,10 +269,9 @@ public abstract class MonitoringModule implements MonitoringModuleInterface {
 						break;
 					}
 				}
-				// Yield if of highest aggression
-				if (yeildController == MonitorThreadAggressionEnum.HIGHEST_AGGRESSION) {
-					Thread.yield();
-				}
+				// Yield irrespective of aggression level
+				Thread.yield();
+
 			}
 
 			try {
