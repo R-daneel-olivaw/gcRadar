@@ -309,7 +309,7 @@ public class ObjectTreeMonitor<I> {
 		monitoringMod.setMonitorThreadYieldController(yeildController);
 	}
 
-	// ****************** INNER-CLASSES ***********************
+	// --------------- INNER-CLASSES ---------------------
 
 	private class TreeInputModule_Impl extends TreeInputModule {
 		public TreeInputModule_Impl(boolean isOptimistic) {

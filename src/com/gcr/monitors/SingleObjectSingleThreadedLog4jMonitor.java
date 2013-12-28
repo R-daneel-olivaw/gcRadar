@@ -303,7 +303,7 @@ public class SingleObjectSingleThreadedLog4jMonitor<I> {
 		monitoringMod.setMonitorThreadYieldController(yeildController);
 	}
 
-	// ****************** INNER-CLASSES ***********************
+	// --------------- INNER-CLASSES ---------------------
 	
 	private class IndividualObjectFeed_Impl extends InputModule {
 		@Override
