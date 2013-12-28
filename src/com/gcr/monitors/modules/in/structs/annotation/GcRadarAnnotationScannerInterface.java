@@ -19,6 +19,14 @@ import java.util.List;
 
 import com.gcr.structs.FieldNameValuePair;
 
+/**
+ * The Interface GcRadarAnnotationScannerInterface can be used to implement
+ * custom annotation scanners that can be used with the GcRadar monitoring
+ * module.
+ * 
+ * @author R.daneel.olivaw
+ * @since 0.4
+ */
 public interface GcRadarAnnotationScannerInterface {
 
 	/**
