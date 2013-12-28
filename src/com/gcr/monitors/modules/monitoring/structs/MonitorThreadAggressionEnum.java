@@ -28,20 +28,26 @@ public enum MonitorThreadAggressionEnum implements MonitorThreadYeildController 
 
 	/**
 	 * The low aggression mode means that the monitoring thread will not take a
-	 * lot of cpu time and yield execution within short intervals.
+	 * lot of cpu time and yield execution within short intervals. The maximum
+	 * Permissible count is 10, this means that in this mode the thread will
+	 * yield execution after polling 10 objects.
 	 */
 	LOW_AGGRESSION(10),
 	/**
 	 * The medium aggression means that the monitoring thread will yield
 	 * execution less frequently than
-	 * {@link MonitorThreadAggressionEnum#LOW_AGGRESSION}.
+	 * {@link MonitorThreadAggressionEnum#LOW_AGGRESSION}. The maximum
+	 * Permissible count is 50, this means that in this mode the thread will
+	 * yield execution after polling 50 objects.
 	 */
 	MEDIUM_AGGRESSION(50),
 	/**
 	 * The high aggression means that the monitoring thread will yield execution
 	 * least often when compared to
 	 * {@link MonitorThreadAggressionEnum#LOW_AGGRESSION} and
-	 * {@link MonitorThreadAggressionEnum#MEDIUM_AGGRESSION}.
+	 * {@link MonitorThreadAggressionEnum#MEDIUM_AGGRESSION}. The maximum
+	 * Permissible count is 100, this means that in this mode the thread will
+	 * yield execution after polling 100 objects.
 	 */
 	HIGH_AGGRESSION(100),
 	/**
