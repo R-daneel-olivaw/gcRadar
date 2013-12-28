@@ -26,7 +26,7 @@ import com.gcr.monitors.ObjectTreeMonitor;
 import com.gcr.monitors.modules.monitoring.MonitoringModuleInterface;
 import com.gcr.monitors.modules.monitoring.structs.MonitorStateEnum;
 import com.gcr.monitors.modules.monitoring.structs.MonitorThreadAggressionEnum;
-import com.gcr.monitors.modules.monitoring.structs.MonitorThreadYeildController;
+import com.gcr.monitors.modules.monitoring.structs.MonitorThreadYieldController;
 import com.gcr.monitors.modules.notification.NotificationModuleInterface;
 import com.gcr.structs.AbstractObjectRefrenceKey;
 
@@ -52,7 +52,7 @@ public abstract class MonitoringModule implements MonitoringModuleInterface {
 
 	private Condition lockTillFinish;
 
-	private MonitorThreadYeildController yeildController = MonitorThreadAggressionEnum.HIGHEST_AGGRESSION;
+	private MonitorThreadYieldController yeildController = MonitorThreadAggressionEnum.HIGHEST_AGGRESSION;
 
 	/** The stop flag that is set when the monitoring thread is stopped. */
 	protected MonitoringModule(
@@ -182,7 +182,7 @@ public abstract class MonitoringModule implements MonitoringModuleInterface {
 	 * @since 0.4
 	 */
 	public void setMonitorThreadYieldController(
-			MonitorThreadYeildController yeildController) {
+			MonitorThreadYieldController yeildController) {
 		if (yeildController == null) {
 			throw new NullPointerException(
 					"MonitorThreadYeildController can not be null");

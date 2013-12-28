@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author R.daneel.olivaw
  * @since 0.4
  */
-public enum MonitorThreadAggressionEnum implements MonitorThreadYeildController {
+public enum MonitorThreadAggressionEnum implements MonitorThreadYieldController {
 
 	/**
 	 * The low aggression mode means that the monitoring thread will not take a
@@ -71,7 +71,7 @@ public enum MonitorThreadAggressionEnum implements MonitorThreadYeildController 
 	 * Returns true if countSinceYield >= the maximum count permissible for that
 	 * aggression level.
 	 * 
-	 * @see com.gcr.monitors.modules.monitoring.structs.MonitorThreadYeildController
+	 * @see com.gcr.monitors.modules.monitoring.structs.MonitorThreadYieldController
 	 *      #shouldYield(int)
 	 */
 	public boolean shouldYield(int countSinceYield) {
