@@ -31,9 +31,8 @@ import com.gcr.structs.AbstractObjectRefrenceKey;
 
 /**
  * The Class ObjectTreeMonitor. This monitor should be used to add an object and
- * all it's comprising members to the GcRadar monitoring. The monitor also adds
- * the members first level(Immediate parent) of the object type. The monitor
- * adds all qualifying fields irrespective of their access modifiers.
+ * all it's comprising members to the GcRadar monitoring. The monitor adds all
+ * qualifying fields irrespective of their access modifiers.
  * 
  * The monitor can be used in the following 2 modes by the {@code boolean}
  * parameter in the constructor.
@@ -68,7 +67,10 @@ import com.gcr.structs.AbstractObjectRefrenceKey;
  * <ul>
  * 
  * @param <I>
- *            the generic type
+ *            the generic type is the type object that can be used to make the
+ *            monitor type specific. However this is not advisable, If such use
+ *            is not required then the monitor can also be defined as a raw
+ *            type.
  * @since 0.2
  * @author R.daneel.olivaw
  */
@@ -99,6 +101,9 @@ public class ObjectTreeMonitor<I> {
 	 * <br>
 	 * For more details please refer to {@link ObjectTreeMonitor}.
 	 * 
+	 * If the monitor declaration has been defined with a type parameter then
+	 * the method will only accept objects that are of the type or a sub-type.
+	 * 
 	 * @param object
 	 *            - The object to be monitored
 	 * @param identifier
@@ -109,13 +114,8 @@ public class ObjectTreeMonitor<I> {
 	 *            reported
 	 * @return <code>true</code> if the object was added successfully<br>
 	 *         <code>false</code> if the object was not added as the identifier
-	 *         used to add the object has already been used.
-	 * 
-	 * @throws NullPointerException
-	 *             if the object to be added of identifier is <code>null</code>.
-	 * @throws UnsupportedOperationException
-	 *             if the monitoring has been explicitly stopped by calling the
-	 *             {@link stopMonitoring()} method.
+	 *         used to add the object has already been used. {@link
+	 *         stopMonitoring()} method.
 	 */
 	public <T extends I> boolean addObject(T object, String identifier,
 			GcRadarCallback callback) {
@@ -275,7 +275,7 @@ public class ObjectTreeMonitor<I> {
 
 	/**
 	 * Checks if monitor can perform lock.
-	 *
+	 * 
 	 * @return true, if lockable
 	 */
 	private boolean isLockable() {
@@ -292,20 +292,21 @@ public class ObjectTreeMonitor<I> {
 
 	/**
 	 * Checks if is monitor ready.
-	 *
+	 * 
 	 * @return true, if is monitor is ready
 	 */
 	private boolean isMonitorReady() {
 		return (state == MonitorStateEnum.RUNNING || state == MonitorStateEnum.NEW);
 	}
-	
+
 	/**
 	 * Sets the monitor thread yield controller.
-	 *
-	 * @param yeildController the new monitor thread yield controller
+	 * 
+	 * @param yeildController
+	 *            the new monitor thread yield controller
 	 */
-	public void setMonitorThreadYieldController(MonitorThreadYieldController yeildController)
-	{
+	public void setMonitorThreadYieldController(
+			MonitorThreadYieldController yeildController) {
 		monitoringMod.setMonitorThreadYieldController(yeildController);
 	}
 
