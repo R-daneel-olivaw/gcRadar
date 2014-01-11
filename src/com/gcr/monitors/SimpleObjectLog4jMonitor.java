@@ -19,22 +19,23 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import com.gcr.callbacks.GcRadarCallback;
+import org.apache.log4j.Logger;
+
 import com.gcr.monitors.modules.in.impl.InputModule;
 import com.gcr.monitors.modules.monitoring.impl.MonitoringModule;
 import com.gcr.monitors.modules.monitoring.structs.MonitorStateEnum;
 import com.gcr.monitors.modules.monitoring.structs.MonitorThreadYieldController;
-import com.gcr.monitors.modules.notification.impl.NotificationModule;
+import com.gcr.monitors.modules.notification.NotificationModuleInterface;
 import com.gcr.structs.AbstractObjectRefrenceKey;
 
 /**
  * This Object monitor runs on a worker thread and captures GC events on the
- * registered objects and notifies the callback class. The class uses the
- * following modules internally,
+ * registered objects and logs using the log4j. The class uses the following
+ * modules internally,
  * <ul>
  * <li>Individual object feed</li>
  * <li>Single worker threaded monitor</li>
- * <li>Callback for notification on GC events</li>
+ * <li>Log4j logger to log GC events</li>
  * </ul>
  * 
  * @param <I>
@@ -42,19 +43,20 @@ import com.gcr.structs.AbstractObjectRefrenceKey;
  *            monitor type specific. However this is not advisable, If such use
  *            is not required then the monitor can also be defined as a raw
  *            type.
- * @author R.daneel.olivaw
+ * @author Manish Kumar
  * @since 0.1
  */
-public class SimpleObjectSingleThreadedMonitor<I> {
+public class SimpleObjectLog4jMonitor<I> {
+
 	private InputModule inMod;
 	private MonitoringModule monitoringMod;
-	private NotificationModule notificationMod;
+	private NotificationModuleInterface notificationMod;
 
 	private MonitorStateEnum state = MonitorStateEnum.NEW;
 
 	/**
 	 * The constructor for creating the
-	 * {@link SimpleObjectSingleThreadedMonitor} object. The constructor will
+	 * {@link SimpleObjectMonitor} object. The constructor will
 	 * initialize the 3 internal modules,
 	 * <ol>
 	 * <li>Individual object feed</li>
@@ -64,13 +66,15 @@ public class SimpleObjectSingleThreadedMonitor<I> {
 	 * in the above order. It also annotates the monitor as running(not
 	 * stopped).
 	 */
-	public SimpleObjectSingleThreadedMonitor() {
+	public SimpleObjectLog4jMonitor() {
+
 		IndividualObjectFeed_Impl individualObjectFeed_Impl = new IndividualObjectFeed_Impl();
 		this.inMod = individualObjectFeed_Impl;
 
 		this.monitoringMod = new SingleThreadedMonitor_Impl(
 				individualObjectFeed_Impl.getWatchList());
-		this.notificationMod = new CallbackNotificationModule_Impl();
+		this.notificationMod = new Log4jNotification_Impl(this.getClass()
+				.getName());
 	}
 
 	/**
@@ -85,22 +89,19 @@ public class SimpleObjectSingleThreadedMonitor<I> {
 	 * @param identifier
 	 *            - The key that will be used as a key for the object to be
 	 *            added for the monitoring purposes.
-	 * @param callback
-	 *            - {@link GcRadarCallback} is used when a GC event needs to be
-	 *            reported
 	 * @return <code>true</code> if the object was added successfully<br>
 	 *         <code>false</code> if the object was not added as the identifier
 	 *         used to add the object has already been used. {@link
 	 *         stopMonitoring()} method.
 	 */
-	public <T extends I> boolean addObject(T object, String identifier,
-			GcRadarCallback callback) {
+	public <T extends I> boolean addObject(T object, String identifier) {
+
 		if (!isMonitorReady()) {
 			throw new UnsupportedOperationException(
 					"Objects can not be added after the moter has been stopped");
 		}
 
-		if (inMod.addObject(object, identifier, callback)) {
+		if (inMod.addObject(object, identifier, null)) {
 			MonitorStateEnum monitoringModuleStatus = monitoringMod
 					.getMonitoringModuleStatus();
 
@@ -124,21 +125,18 @@ public class SimpleObjectSingleThreadedMonitor<I> {
 	 * 
 	 * @param object
 	 *            - The object to be monitored
-	 * @param callback
-	 *            - {@link GcRadarCallback} is used when a GC event needs to be
-	 *            reported
 	 * @return <code>true</code> if the object was added successfully<br>
 	 *         <code>false</code> if the object was not added as the identifier
 	 *         used to add the object has already been used. {@link
 	 *         stopMonitoring()} method.
 	 */
-	public <T extends I> boolean addObject(T object, GcRadarCallback callback) {
+	public <T extends I> boolean addObject(T object) {
 		if (!isMonitorReady()) {
 			throw new UnsupportedOperationException(
 					"Objects can not be added after the moter has been stopped");
 		}
 
-		if (inMod.addObject(object, callback)) {
+		if (inMod.addObject(object, null)) {
 			MonitorStateEnum monitoringModuleStatus = monitoringMod
 					.getMonitoringModuleStatus();
 
@@ -166,6 +164,7 @@ public class SimpleObjectSingleThreadedMonitor<I> {
 	 *             {@link stopMonitoring()} method.
 	 */
 	public boolean removeObject(String objectKey) {
+
 		if (!isMonitorReady()) {
 			throw new UnsupportedOperationException(
 					"Objects can not be removed after the moter has been stopped");
@@ -317,6 +316,7 @@ public class SimpleObjectSingleThreadedMonitor<I> {
 	}
 
 	private class SingleThreadedMonitor_Impl extends MonitoringModule {
+
 		protected SingleThreadedMonitor_Impl(
 				List<AbstractObjectRefrenceKey<Object>> keyCollection) {
 			super(keyCollection);
@@ -324,8 +324,48 @@ public class SimpleObjectSingleThreadedMonitor<I> {
 		// Full implementation in super as functionality used as is
 	}
 
-	private class CallbackNotificationModule_Impl extends NotificationModule {
-		// Full implementation in super as functionality used as is
+	private class Log4jNotification_Impl implements NotificationModuleInterface {
+
+		Logger log = null;
+
+		public Log4jNotification_Impl(String loggerName) {
+			if (loggerName.isEmpty()) {
+				throw new UnsupportedOperationException("Logger Name not Found");
+			}
+			log = Logger.getLogger(loggerName);
+			if (log == null || !(log instanceof Logger)) {
+				throw new UnsupportedOperationException(loggerName
+						+ " : Logger not found");
+			}
+		}
+
+		@Override
+		public boolean notifyStartMonitoring() {
+			log.info("Monitoring start..");
+			return false;
+		}
+
+		@Override
+		public boolean notifyStopMonitoring() {
+			log.info("Monitoring end..");
+			return false;
+		}
+
+		@Override
+		public boolean notifyPreGcEvent(
+				AbstractObjectRefrenceKey<Object> refrenceKey) {
+			log.info(refrenceKey.getObjRefrenceKey()
+					+ " : refrence key object is about to be garbage collection.");
+			return false;
+		}
+
+		@Override
+		public boolean notifyPostGcEvent(
+				AbstractObjectRefrenceKey<Object> refrenceKey) {
+			log.info(refrenceKey.getObjRefrenceKey()
+					+ " : refrence key object is garbage collected.");
+			return false;
+		}
 	}
 
 }
